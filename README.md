@@ -48,9 +48,18 @@ python manage.py runserver
 
 Then open http://127.0.0.1:8000 and sign in with the user you created.
 
-### Email
+### Email and secrets
 
-Sending email uses Gmail SMTP. Set `EMAIL_HOST_USER`, `EMAIL_HOST_PASSWORD` (a Gmail app password) and `DEFAULT_FROM_EMAIL` in `HRchecklist/settings.py`. Keep real credentials out of version control, for example by loading them from environment variables.
+Credentials are read from environment variables, never stored in the code:
+
+```bash
+export DJANGO_SECRET_KEY="any-long-random-string"
+export EMAIL_HOST_USER="you@gmail.com"
+export EMAIL_HOST_PASSWORD="your-gmail-app-password"
+export DEFAULT_FROM_EMAIL="you@gmail.com"   # optional, defaults to EMAIL_HOST_USER
+```
+
+`db.sqlite3` and uploaded files in `documents/` are created locally and are not part of the repository.
 
 ### Daily reminders (optional)
 
@@ -76,4 +85,4 @@ celery -A HRchecklist beat -l info
 
 - `generate_filled_pdf` uses a hard-coded Windows path to the offer letter template. Change it to a path relative to the project (for example `BASE_DIR / "templates" / "Offerletter.pdf"`).
 - `HRchecklist/celery.py` points at `your_project.settings` and `app.tasks.send_expiration_reminders`. These should be `HRchecklist.settings` and `HRoperations.tasks.send_expiration_reminders` for the scheduled reminders to run.
-- `DEBUG = True` and the secret key are set directly in `settings.py`. Change both before deploying.
+- `DEBUG = True` is set in `settings.py`. Turn it off before deploying.
